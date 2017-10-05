@@ -8,13 +8,13 @@ database = {
     },
     "tasks":{
         "gmail":[
-            {"id":1, "name":"Task One", "done":False}
+            {"id":1, "name":"Task One", "done":True},
+            {"id":2, "name":"Task Two", "done":False}
         ]
     }
 }
 
 def login(email, password):
-    print(database)
     data = {"error":None}
     if email in database["users"]:
         if database["users"][email]["password"] == password:
@@ -28,7 +28,11 @@ def register(username, email, password):
     if email in database["users"]:
         data["error"] = "%s is already registered!" %email
     else:
-        database["users"][email] = {"email":email,"username":username, "password":password}
+        database["users"][email] = {
+            "email":email,
+            "username":username,
+            "password":password
+        }
         database["tasks"][email] = []
         data["info"] = "Account created!"
     return data
@@ -36,7 +40,6 @@ def register(username, email, password):
 def add_task(user, task):
     id = len(database["tasks"][user]) + 1
     database["tasks"][user].append({"id":id, "name":task, "done":False})
-    print(user, task, database)
 
 def get_tasks(user):
     return database["tasks"][user]

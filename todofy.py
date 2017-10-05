@@ -57,3 +57,8 @@ def index():
         return render_template("index.html", **session["data"])
     else:
         return redirect(url_for("login_view"))
+
+@app.route("/complete", methods=["POST"])
+def complete():
+    print(request.form)
+    return redirect(url_for("index"))
