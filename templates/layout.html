@@ -1,9 +1,14 @@
 <!doctype html>
 <html>
     <head>
-        <title>{% block title %}{% endblock %} - ToDofy</title>
+        <title>{{ title }} - ToDofy</title>
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <h1>{{ title }}</h1>
+        {% for message in get_flashed_messages() %}
+            <p>{{ message }}</p>
+        {% endfor %}
+        {% if error %}<strong>Error:</strong> {{ error }}{% endif %}
+        {% block content %}{% endblock %}
     </body>
 </html>
