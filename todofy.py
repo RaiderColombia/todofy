@@ -45,14 +45,15 @@ def register_view():
             data["error"] = result["error"]
     elif "data" in session:
         return redirect(url_for("index"))
-    else:
-        return render_template("register.html", **data)
+    return render_template("register.html", **data)
 
 @app.route("/index", methods=["GET", "POST"])
 def index():
     if "data" in session:
         if request.method == "POST":
-            add_task("gmail", request.form["task_name"])
+            add_task(session["data"]["user"]["email"], request.form["task_name"])
+            flash('"%s" added to the list!' %request.form["task_name"])
+        session["data"]["tasks"] = get_tasks(session["data"]["user"]["email"])
         return render_template("index.html", **session["data"])
     else:
         return redirect(url_for("login_view"))

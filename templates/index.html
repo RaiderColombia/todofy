@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
     Logged in as: <b>{{ user["username"] }}</b> <a href="{{ url_for('logout_view') }}">Logout</a>
-    <h1>Task List ({{ user["tasks"]|length }})</h1>
+    <h1>Task List ({{ tasks|length }})</h1>
     <form action="{{ url_for('index') }}" method=post>
         Task: <input type=text name=task_name><input type=submit value=Add>
     </form>
-    {% for task in user["tasks"] %}
+    {% for task in tasks %}
         <p>
             <input type="checkbox" name="tasks" id="id_task_{{ task["id"] }}">
             <label for="id_task_{{ task["id"] }}">{{ task["name"] }}</label>
