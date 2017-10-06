@@ -2,13 +2,14 @@
 <html>
     <head>
         <title>{{ title }} - ToDofy</title>
+        {% block head_script %} {% endblock %}
     </head>
     <body>
         <h1>{{ title }}</h1>
         {% for message in get_flashed_messages() %}
             <p>{{ message }}</p>
         {% endfor %}
-        {% if error %}<strong>Error:</strong> {{ error }}{% endif %}
+        {% if error %}<strong> {{ error }} </strong>{% endif %}
         {% block content %}{% endblock %}
     </body>
 </html>

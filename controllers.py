@@ -1,16 +1,16 @@
 database = {
     "users":{
-        "gmail":{
-            "email":"gmail",
+        "raider@gmail":{
+            "email":"raider@gmail",
             "password":"lara",
             "username":"raider"
         }
     },
     "tasks":{
-        "gmail":[
-            {"id":1, "name":"Task One", "done":True},
-            {"id":2, "name":"Task Two", "done":False}
-        ]
+        "raider@gmail":{
+            1: {"name":"Task One", "done":True},
+            2: {"name":"Task Two", "done":False}
+        }
     }
 }
 
@@ -33,13 +33,16 @@ def register(username, email, password):
             "username":username,
             "password":password
         }
-        database["tasks"][email] = []
+        database["tasks"][email] = {}
         data["info"] = "Account created!"
     return data
 
 def add_task(user, task):
     id = len(database["tasks"][user]) + 1
-    database["tasks"][user].append({"id":id, "name":task, "done":False})
+    database["tasks"][user][id] = {"name":task, "done":False}
 
 def get_tasks(user):
     return database["tasks"][user]
+
+def complete_task(user, task_id, is_checked):
+    database["tasks"][user][task_id]["done"] = is_checked

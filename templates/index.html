@@ -1,25 +1,24 @@
 {% extends "layout.html" %}
+{% block head_script %}
+    <script type=text/javascript
+        src="{{ url_for('static', filename='jquery-3.2.1.js') }}">
+    </script>
+{% endblock %}
 {% block content %}
     Logged in as: <b>{{ user["username"] }}</b>
     <a href="{{ url_for('logout_view') }}">Logout</a>
     <h1>Task List ({{ tasks|length }})</h1>
     <form action="{{ url_for('index') }}" method=post>
-        Task: <input type=text name=task_name><input type=submit value=Add>
+        Task: <input type=text name=task_name required>
+        <input type=submit value="Add New To-Do">
     </form>
-    {% for task in tasks %}
+    {% for id,task in tasks.items() %}
         <p>
-            <form id="form_check_{{ task["id"] }}" action="{{ url_for('complete') }}" method=post>
-                <input
-                    type="checkbox"
-                    name="task"
-                    id="task_{{ task["id"] }}"
-                    value="{{ task["id"] }}"
-                    {% if task["done"] %}
-                        checked
-                    {% endif %}
-                    onclick = "checkBoxes({{ task["id"] }});"
-                >
-                <label for="task_{{ task["id"] }}">
+            <form id="form_check_{{ id }}">
+                <input type="checkbox" name="task" id="task_{{ id }}"
+                    value="{{ id }}"
+                    {% if task["done"] %} checked {% endif %}>
+                <label for="task_{{ id }}">
                     {% if task["done"] %}
                         <del>{{ task["name"] }}</del>
                     {% else %}
@@ -28,12 +27,26 @@
                 </label>
             </form>
         </p>
+        <script>
+            $(document).ready(function(){
+                $("#task_{{ id }}").change(function(){
+                    var task_info = {
+                        task_id: {{ id }},
+                        is_checked : $(this).is(':checked')
+                    };
+                    $.ajax({
+                        url: 'complete',
+                        data: JSON.stringify(task_info),
+                        type: 'POST',
+                        contentType: 'application/json;charset=UTF-8',
+                        success: function(response) {
+                            document.open();
+                            document.write(response);
+                            document.close();
+                        },
+                    });
+                });
+            });
+        </script>
     {% endfor %}
-    <script>
-        function checkBoxes(id){
-            //var check = document.getElementById("id_task_"+id);
-            //alert(check.checked);
-            document.getElementById("form_check_"+id).submit();
-        }
-    </script>
 {% endblock %}

@@ -10,19 +10,18 @@ def login_view():
     data = {"error": None, "title":"Login"}
     if request.method == "POST":
         result = login(request.form["email"], request.form["password"])
-        if "user" in result:
+        if result["error"]:
+            data["error"] = result["error"]
+        elif "user" in result:
             session["data"] = result
             flash("Welcome %s!"%result["user"]["username"])
             return redirect(url_for("index"))
-        elif result["error"]:
-            data["error"] = result["error"]
         else:
             flash("Please create an account!")
             return redirect(url_for("register_view"))
     elif "data" in session:
         return redirect(url_for("index"))
-    else:
-        return render_template("login.html", **data)
+    return render_template("login.html", **data)
 
 @app.route("/logout")
 def logout_view():
@@ -32,7 +31,9 @@ def logout_view():
 @app.route("/register", methods=["GET", "POST"])
 def register_view():
     data = {"error": None, "title":"Register"}
-    if request.method == "POST":
+    if "data" in session:
+        return redirect(url_for("index"))
+    elif request.method == "POST":
         result = register(
             request.form["username"],
             request.form["email"],
@@ -43,8 +44,6 @@ def register_view():
             return redirect(url_for("login_view"))
         else:
             data["error"] = result["error"]
-    elif "data" in session:
-        return redirect(url_for("index"))
     return render_template("register.html", **data)
 
 @app.route("/index", methods=["GET", "POST"])
@@ -60,5 +59,6 @@ def index():
 
 @app.route("/complete", methods=["POST"])
 def complete():
-    print(request.form)
-    return redirect(url_for("index"))
+    complete_task(session["data"]["user"]["email"], **request.json)
+    session["data"]["tasks"] = get_tasks(session["data"]["user"]["email"])
+    return render_template("index.html", **session["data"])
