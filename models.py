@@ -9,5 +9,5 @@ class Users(db.Document):
 
 class Tasks(db.Document):
     name = db.StringField()
-    done = db.BooleanField()
+    done = db.BooleanField(default=False)
     user = db.ReferenceField(Users)

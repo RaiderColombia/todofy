@@ -13,9 +13,9 @@
         <input type=submit value="Add New To-Do">
     </form>
     <form id="form_checkboxes">
-        {% for id,task in tasks.items() %}
+        {% for task in tasks %}
             <p>
-                <input type="checkbox" id="task_{{ id }}" value="{{ id }}"
+                <input type="checkbox" id="task_{{ task.id }}" value="{{ task.id }}"
                     {% if task["done"] %} checked {% endif %}>
                 {% include "labels.html"%}
             </p>

@@ -51,9 +51,9 @@ class Index(views.View):
         if "data" not in session:
             return redirect(url_for("login_view"))
         if request.method == "POST":
-            add_task(session["data"]["user"]["email"], request.form["task_name"])
+            add_task(session["data"]["user"], request.form["task_name"])
             flash('"%s" added to the list!' %request.form["task_name"])
-        session["data"]["tasks"] = get_tasks(session["data"]["user"]["email"])
+        session["data"]["tasks"] = get_tasks(session["data"]["user"])
         session["data"]["title"] = "Task List"
         return render_template("index.html", **session["data"])
 
@@ -61,6 +61,6 @@ class Complete(views.View):
     methods = ['POST']
     def dispatch_request(self):
         id = request.json["task_id"]
-        complete_task(session["data"]["user"]["email"], **request.json)
-        tasks = get_tasks(session["data"]["user"]["email"])
-        return render_template("labels.html", task = tasks[int(id)], id = id)
+        task = complete_task(session["data"]["user"], **request.json)
+        tasks = get_tasks(session["data"]["user"])
+        return render_template("labels.html", task = task, id = id)

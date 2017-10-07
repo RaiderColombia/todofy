@@ -1,20 +1,5 @@
 from .models import *
-
-database = {
-    "users":{
-        "jhon@datagran.com":{
-            "email":"raider@gmail",
-            "password":"lara",
-            "username":"raider"
-        }
-    },
-    "tasks":{
-        "jhon@datagran.com":{
-            1: {"name":"Task One", "done":True},
-            2: {"name":"Task Two", "done":False}
-        }
-    }
-}
+from bson.objectid import ObjectId
 
 def login(email, password):
     data = {"error":None}
@@ -30,24 +15,24 @@ def login(email, password):
 
 def register(username, email, password):
     data = {"error":None}
-    if email in database["users"]:
+    try:
+        user = Users.objects.get(email=email)
         data["error"] = "%s is already registered!" %email
-    else:
-        database["users"][email] = {
-            "email":email,
-            "username":username,
-            "password":password
-        }
-        database["tasks"][email] = {}
+    except Users.DoesNotExist:
+        Users(email=email, username=username, password=password).save()
         data["info"] = "Account created!"
     return data
 
 def add_task(user, task):
-    id = len(database["tasks"][user]) + 1
-    database["tasks"][user][id] = {"name":task, "done":False}
+    user = Users.objects.get(id=ObjectId(user["_id"]["$oid"]))
+    Tasks(name=task, user=user).save()
 
 def get_tasks(user):
-    return database["tasks"][user]
+    user = Users.objects.get(id=ObjectId(user["_id"]["$oid"]))
+    return Tasks.objects(user=user)
 
 def complete_task(user, task_id, is_checked):
-    database["tasks"][user][int(task_id)]["done"] = is_checked
+    task = Tasks.objects.get(id=ObjectId(task_id))
+    task.done = is_checked
+    task.save()
+    return task
