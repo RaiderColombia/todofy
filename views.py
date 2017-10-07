@@ -14,10 +14,10 @@ class Login(views.View):
                 data["error"] = result["error"]
             elif "user" in result:
                 session["data"] = result
-                flash("Welcome %s!"%result["user"]["username"])
+                flash("Welcome %s!"%result["user"]["username"], "info")
                 return redirect(url_for("index"))
             else:
-                flash("Please create an account!")
+                flash("Please create an account!", "error")
                 return redirect(url_for("register_view"))
         return render_template("login.html", **data)
 
@@ -39,7 +39,7 @@ class Register(views.View):
                 request.form["password"]
             )
             if "info" in result:
-                flash(result["info"])
+                flash(result["info"], "success")
                 return redirect(url_for("login_view"))
             else:
                 data["error"] = result["error"]
@@ -52,7 +52,7 @@ class Index(views.View):
             return redirect(url_for("login_view"))
         if request.method == "POST":
             add_task(session["data"]["user"], request.form["task_name"])
-            flash('"%s" added to the list!' %request.form["task_name"])
+            flash('"%s" added to the list!' %request.form["task_name"], "success")
         session["data"]["tasks"] = get_tasks(session["data"]["user"])
         session["data"]["title"] = "Task List"
         return render_template("index.html", **session["data"])

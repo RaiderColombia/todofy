@@ -4,22 +4,51 @@
         src="{{ url_for('static', filename='jquery-3.2.1.js') }}">
     </script>
 {% endblock %}
+{% block profile %}
+    <center>
+        <div>
+            Logged in as: <i>{{ user["username"] }}</i>
+            <a href="{{ url_for('logout_view') }}">Logout</a>
+        </div>
+    </center>
+    <br/>
+{% endblock %}
 {% block content %}
-    Logged in as: <b>{{ user["username"] }}</b>
-    <a href="{{ url_for('logout_view') }}">Logout</a>
-    <h3>You have ({{ tasks|length }}) tasks</h3>
+    <center>
+        <h3 class="title">
+            You have
+            <span class="badge badge-primary">
+                {{ tasks|length }}
+            </span>
+            tasks</h3>
+    </center>
     <form action="{{ url_for('index') }}" method=post>
-        Task: <input type=text name=task_name required>
-        <input type=submit value="Add New To-Do">
-    </form>
-    <form id="form_checkboxes">
-        {% for task in tasks %}
-            <p>
-                <input type="checkbox" id="task_{{ task.id }}" value="{{ task.id }}"
-                    {% if task["done"] %} checked {% endif %}>
-                {% include "labels.html"%}
-            </p>
-        {% endfor %}
+        <div class="container">
+            <div class="form-group row justify-content-center">
+                <div class="input-group">
+                    <input type=text name=task_name id=task_name required
+                        placeholder="Enter a task" class="form-control">
+                    <span class="input-group-btn">
+                        <input type=submit value="Add New To-Do"
+                            class="btn btn-outline-primary">
+                    </span>
+                </div>
+            </div>
+            <div class="form-group row justify-content-center">
+                <form id="form_checkboxes">
+                    <ul class="list-group">
+                        {% for task in tasks %}
+                            <li class="list-group-item">
+                                <input type="checkbox" id="task_{{ task.id }}"
+                                    value="{{ task.id }}"
+                                    {% if task["done"] %} checked {% endif %}>
+                                {% include "labels.html"%}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </form>
+            </div>
+        </div>
     </form>
     <script>
         $(document).ready(function(){

@@ -2,14 +2,42 @@
 <html>
     <head>
         <title>{{ title }} - ToDofy</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
         {% block head_script %} {% endblock %}
     </head>
     <body>
-        <h1>{{ title }}</h1>
-        {% for message in get_flashed_messages() %}
-            <p>{{ message }}</p>
-        {% endfor %}
-        {% if error %}<strong> {{ error }} </strong>{% endif %}
+        <center><h1>{{ title }}</h1></center>
+        {% block profile %}{% endblock %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="container">
+                      </div>
+                        <div class="form-group row justify-content-center">
+                            {% if category == "info" %}
+                                <div class="alert alert-primary" role="alert">
+                            {% elif category == "error"%}
+                                <div class="alert alert-danger" role="alert">
+                            {% elif category == "success"%}
+                                <div class="alert alert-success" role="alert">
+                            {% else %}
+                                <div class="alert alert-info" role="alert">
+                            {% endif %}
+                            {{ message }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% if error %}
+            <div class="container">
+                <div class="form-group row justify-content-center">
+                    <div class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
         {% block content %}{% endblock %}
     </body>
 </html>
