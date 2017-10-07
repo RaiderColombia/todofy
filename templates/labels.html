@@ -1,0 +1,7 @@
+<label id="ltask_{{ id }}" for="task_{{ id }}">
+    {% if task["done"] %}
+        <del>{{ task["name"] }}</del>
+    {% else %}
+        {{ task["name"] }}
+    {% endif %}
+</label>

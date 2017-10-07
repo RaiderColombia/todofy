@@ -7,46 +7,38 @@
 {% block content %}
     Logged in as: <b>{{ user["username"] }}</b>
     <a href="{{ url_for('logout_view') }}">Logout</a>
-    <h1>Task List ({{ tasks|length }})</h1>
+    <h3>You haver ({{ tasks|length }}) tasks</h3>
     <form action="{{ url_for('index') }}" method=post>
         Task: <input type=text name=task_name required>
         <input type=submit value="Add New To-Do">
     </form>
-    {% for id,task in tasks.items() %}
-        <p>
-            <form id="form_check_{{ id }}">
-                <input type="checkbox" name="task" id="task_{{ id }}"
-                    value="{{ id }}"
+    <form id="form_checkboxes">
+        {% for id,task in tasks.items() %}
+            <p>
+                <input type="checkbox" id="task_{{ id }}" value="{{ id }}"
                     {% if task["done"] %} checked {% endif %}>
-                <label for="task_{{ id }}">
-                    {% if task["done"] %}
-                        <del>{{ task["name"] }}</del>
-                    {% else %}
-                        {{ task["name"] }}
-                    {% endif %}
-                </label>
-            </form>
-        </p>
-        <script>
-            $(document).ready(function(){
-                $("#task_{{ id }}").change(function(){
-                    var task_info = {
-                        task_id: {{ id }},
-                        is_checked : $(this).is(':checked')
-                    };
-                    $.ajax({
-                        url: 'complete',
-                        data: JSON.stringify(task_info),
-                        type: 'POST',
-                        contentType: 'application/json;charset=UTF-8',
-                        success: function(response) {
-                            document.open();
-                            document.write(response);
-                            document.close();
-                        },
-                    });
+                {% include "labels.html"%}
+            </p>
+        {% endfor %}
+    </form>
+    <script>
+        $(document).ready(function(){
+            $(':checkbox').change(function(){
+                var _this = this;
+                var task_info = {
+                    task_id: $(this).attr("value"),
+                    is_checked : $(this).is(':checked')
+                };
+                $.ajax({
+                    url: 'complete',
+                    data: JSON.stringify(task_info),
+                    type: 'POST',
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function(response) {
+                        $("#l"+_this.id).hide().html(response).fadeIn('slow');
+                    },
                 });
             });
-        </script>
-    {% endfor %}
+        });
+    </script>
 {% endblock %}

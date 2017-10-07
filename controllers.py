@@ -45,4 +45,4 @@ def get_tasks(user):
     return database["tasks"][user]
 
 def complete_task(user, task_id, is_checked):
-    database["tasks"][user][task_id]["done"] = is_checked
+    database["tasks"][user][int(task_id)]["done"] = is_checked
