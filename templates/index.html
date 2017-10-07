@@ -7,7 +7,7 @@
 {% block content %}
     Logged in as: <b>{{ user["username"] }}</b>
     <a href="{{ url_for('logout_view') }}">Logout</a>
-    <h3>You haver ({{ tasks|length }}) tasks</h3>
+    <h3>You have ({{ tasks|length }}) tasks</h3>
     <form action="{{ url_for('index') }}" method=post>
         Task: <input type=text name=task_name required>
         <input type=submit value="Add New To-Do">

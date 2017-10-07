@@ -62,5 +62,4 @@ class Complete(views.View):
     def dispatch_request(self):
         id = request.json["task_id"]
         task = complete_task(session["data"]["user"], **request.json)
-        tasks = get_tasks(session["data"]["user"])
         return render_template("labels.html", task = task, id = id)

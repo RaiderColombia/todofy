@@ -1,11 +1,12 @@
 from .models import *
 from bson.objectid import ObjectId
+from werkzeug.security import check_password_hash
 
 def login(email, password):
     data = {"error":None}
     try:
         user = Users.objects.get(email=email)
-        if user.password == password:
+        if check_password_hash(user.password, password):
             data["user"] = user
         else:
             data["error"] = "Invalid password!"
@@ -19,7 +20,9 @@ def register(username, email, password):
         user = Users.objects.get(email=email)
         data["error"] = "%s is already registered!" %email
     except Users.DoesNotExist:
-        Users(email=email, username=username, password=password).save()
+        user = Users(email=email, username=username)
+        user.set_password(password)
+        user.save()
         data["info"] = "Account created!"
     return data
 
