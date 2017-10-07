@@ -1,13 +1,15 @@
+from .models import *
+
 database = {
     "users":{
-        "raider@gmail":{
+        "jhon@datagran.com":{
             "email":"raider@gmail",
             "password":"lara",
             "username":"raider"
         }
     },
     "tasks":{
-        "raider@gmail":{
+        "jhon@datagran.com":{
             1: {"name":"Task One", "done":True},
             2: {"name":"Task Two", "done":False}
         }
@@ -16,11 +18,14 @@ database = {
 
 def login(email, password):
     data = {"error":None}
-    if email in database["users"]:
-        if database["users"][email]["password"] == password:
-            data["user"] = database["users"][email]
+    try:
+        user = Users.objects.get(email=email)
+        if user.password == password:
+            data["user"] = user
         else:
             data["error"] = "Invalid password!"
+    except Users.DoesNotExist:
+        pass
     return data
 
 def register(username, email, password):

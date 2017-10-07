@@ -1,65 +1,17 @@
-from flask import Flask, request, redirect, url_for, render_template, session, \
-        flash
-from .controllers import *
+from flask import Flask
+from .views import *
+from .models import db
 
 app = Flask(__name__)
-app.secret_key = "my secret key"
+app.secret_key = "\xbf\xd9\xe4B\xae\xffw\x11\xefu\xf2\x12\xc8\xc7xBC\x80\xb9\x88\xb2\x8c/Y"
+app.config["MONGODB_SETTINGS"] = {
+    "db": "todofy",
+    "host": "localhost"
+}
+db.init_app(app)
 
-@app.route("/login", methods=["GET", "POST"])
-def login_view():
-    data = {"error": None, "title":"Login"}
-    if "data" in session:
-        return redirect(url_for("index"))
-    if request.method == "POST":
-        result = login(request.form["email"], request.form["password"])
-        if result["error"]:
-            data["error"] = result["error"]
-        elif "user" in result:
-            session["data"] = result
-            flash("Welcome %s!"%result["user"]["username"])
-            return redirect(url_for("index"))
-        else:
-            flash("Please create an account!")
-            return redirect(url_for("register_view"))
-    return render_template("login.html", **data)
-
-@app.route("/logout")
-def logout_view():
-    session.pop("data", None)
-    return redirect(url_for("login_view"))
-
-@app.route("/register", methods=["GET", "POST"])
-def register_view():
-    data = {"error": None, "title":"Register"}
-    if "data" in session:
-        return redirect(url_for("index"))
-    if request.method == "POST":
-        result = register(
-            request.form["username"],
-            request.form["email"],
-            request.form["password"]
-        )
-        if "info" in result:
-            flash(result["info"])
-            return redirect(url_for("login_view"))
-        else:
-            data["error"] = result["error"]
-    return render_template("register.html", **data)
-
-@app.route("/index", methods=["GET", "POST"])
-def index():
-    if "data" not in session:
-        return redirect(url_for("login_view"))
-    if request.method == "POST":
-        add_task(session["data"]["user"]["email"], request.form["task_name"])
-        flash('"%s" added to the list!' %request.form["task_name"])
-    session["data"]["tasks"] = get_tasks(session["data"]["user"]["email"])
-    session["data"]["title"] = "Task List"
-    return render_template("index.html", **session["data"])
-
-@app.route("/complete", methods=["POST"])
-def complete():
-    id = request.json["task_id"]
-    complete_task(session["data"]["user"]["email"], **request.json)
-    tasks = get_tasks(session["data"]["user"]["email"])
-    return render_template("labels.html", task = tasks[int(id)], id = id)
+app.add_url_rule("/login", view_func=Login.as_view("login_view"))
+app.add_url_rule("/logout", view_func=Logout.as_view("logout_view"))
+app.add_url_rule("/register", view_func=Register.as_view("register_view"))
+app.add_url_rule("/index", view_func=Index.as_view("index"))
+app.add_url_rule("/complete", view_func=Complete.as_view("complete"))
